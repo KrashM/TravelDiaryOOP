@@ -19,6 +19,22 @@ Date &Date::operator =(const Date &other){
 
 }
 
+ostream &operator <<(ostream &os, const Date &obj){
+
+    os << obj.toString();
+    return os;
+
+}
+
+istream &operator >>(istream &is, Date &obj){
+
+    char separator;
+
+    is >> obj.day >> separator >> obj.mounth >> separator >> obj.year;
+    return is;
+
+}
+
 void Date::setDay(unsigned char day){ this -> day = day; }
 void Date::setMounth(unsigned char mounth){ this -> mounth = mounth; }
 void Date::setYear(unsigned short year){ this -> year = year; }

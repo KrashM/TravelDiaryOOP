@@ -1,10 +1,15 @@
 #pragma once
 
+#include <iostream>
+
+using std::istream;
+using std::ostream;
+
 class Date{
 
     private:
-        unsigned char day, mounth;
         unsigned short year;
+        unsigned char day, mounth;
 
         void copy(const Date &other);
 
@@ -14,6 +19,8 @@ class Date{
         Date(const Date &other);
 
         Date &operator =(const Date &other);
+        friend ostream &operator <<(ostream &os, const Date &obj);
+        friend istream &operator >>(istream &is, Date &obj);
 
         void setDay(unsigned char day);
         void setMounth(unsigned char mounth);

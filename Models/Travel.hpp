@@ -19,6 +19,8 @@ class Travel{
         ~Travel();
 
         Travel &operator =(const Travel &other);
+        friend ostream &operator <<(ostream &os, const Travel &obj);
+        friend istream &operator >>(istream &is, Travel &obj);
 
         void setDestination(const char *destination);
         void setFromDate(const Date &from);

@@ -61,6 +61,20 @@ Travel &Travel::operator =(const Travel &other){
 
 }
 
+ostream &operator <<(ostream &os, const Travel &obj){
+
+    os << obj.destination << ' ' << obj.from << ' ' << obj.to << ' ' << (int)obj.grade << ' ' << obj.comment << ' ' << obj.photos;
+    return os;
+
+}
+
+istream &operator >>(istream &in, Travel &obj){
+
+    in >> obj.destination >> obj.from >> obj.to >> obj.grade >> obj.comment >> obj.photos;
+    return in;
+
+}
+
 void Travel::setDestination(const char *destination){
 
     this -> destination = new char[strlen(destination) + 1];
