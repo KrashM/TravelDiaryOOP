@@ -61,7 +61,7 @@ Travel &Travel::operator =(const Travel &other){
 
 }
 
-ostream &operator <<(ostream &os, const Travel &obj) const{
+ostream &operator <<(ostream &os, const Travel &obj){
 
     os << obj.destination << ' ' << obj.from << ' ' << obj.to << ' ' << (int)obj.grade << " Comment " << obj.comment << " Photos " << obj.photos;
     return os;

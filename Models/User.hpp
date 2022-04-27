@@ -1,14 +1,15 @@
 #pragma once
 
 #include "Travel.hpp"
+#include "../../includes/Vector.h"
 
-class User
-{
+class User{
+
     private:
         char *username;
         char *password;
         char *email;
-        Travel *travels;
+        Vector<Travel> travels;
         
         void erase();
         void copy(const User &);
@@ -20,14 +21,22 @@ class User
         ~User();
 
         User &operator =(const User &);
-        friend ostream &operator <<(ostream &, const User &) const;
-        friend istream &operator >>(istream &, User &);
 
-        void write(ofstream &ofs) const;
-        void read(ifstream &ifs);
+        void write(ofstream &) const;
+        void read(ifstream &);
 
-        void addTravel(const Travel *);
+        void addTravel(const Travel &);
 
-        void setUsername(const char *username);
+        void setUsername(const char *);
+        void setPassword(const char *);
+        void setEmail(const char *);
 
-}
+        char *getUsername() const;
+        char *getPassword() const;
+        char *getEmail() const;
+
+        static void validateUsername(const char *, Vector<User>);
+        static void validatePassword(const char *);
+        static void validateEmail(const char *);
+
+};

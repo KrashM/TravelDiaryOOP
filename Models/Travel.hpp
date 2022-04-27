@@ -24,7 +24,7 @@ class Travel{
         ~Travel();
 
         Travel &operator =(const Travel &);
-        friend ostream &operator <<(ostream &, const Travel &) const;
+        friend ostream &operator <<(ostream &, const Travel &);
         friend istream &operator >>(istream &, Travel &);
 
         void write(ofstream &) const;
