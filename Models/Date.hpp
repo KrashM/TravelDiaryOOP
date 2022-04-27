@@ -11,20 +11,20 @@ class Date{
         unsigned short year;
         unsigned char day, mounth;
 
-        void copy(const Date &other);
+        void copy(const Date &);
 
     public:
         Date();
-        Date(unsigned char day, unsigned mounth, unsigned year);
-        Date(const Date &other);
+        Date(unsigned char, unsigned, unsigned);
+        Date(const Date &);
 
-        Date &operator =(const Date &other);
-        friend ostream &operator <<(ostream &os, const Date &obj);
-        friend istream &operator >>(istream &is, Date &obj);
+        Date &operator =(const Date &);
+        friend ostream &operator <<(ostream &, const Date &);
+        friend istream &operator >>(istream &, Date &);
 
-        void setDay(unsigned char day);
-        void setMounth(unsigned char mounth);
-        void setYear(unsigned short year);
+        void setDay(unsigned char);
+        void setMounth(unsigned char);
+        void setYear(unsigned short);
 
         unsigned char getDay() const;
         unsigned char getMounth() const;

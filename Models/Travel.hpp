@@ -1,6 +1,11 @@
 #pragma once
 
 #include "Date.hpp"
+#include <fstream>
+
+using std::ifstream;
+using std::ofstream;
+using std::ios;
 
 class Travel{
 
@@ -10,24 +15,27 @@ class Travel{
         unsigned char grade;
 
         void erase();
-        void copy(const Travel &other);
+        void copy(const Travel &);
 
     public:
         Travel();
-        Travel(const char *destination, const Date &from, const Date &to, const unsigned char grade, const char *comment, const char *photos);
-        Travel(const Travel &other);
+        Travel(const char *, const Date &, const Date &, const unsigned char, const char *, const char *);
+        Travel(const Travel &);
         ~Travel();
 
-        Travel &operator =(const Travel &other);
-        friend ostream &operator <<(ostream &os, const Travel &obj);
-        friend istream &operator >>(istream &is, Travel &obj);
+        Travel &operator =(const Travel &);
+        friend ostream &operator <<(ostream &, const Travel &) const;
+        friend istream &operator >>(istream &, Travel &);
 
-        void setDestination(const char *destination);
-        void setFromDate(const Date &from);
-        void setToDate(const Date &to);
-        void setGrade(const unsigned short grade);
-        void setComment(const char *comment);
-        void setPhotos(const char *photos);
+        void write(ofstream &) const;
+        void read(ifstream &);
+
+        void setDestination(const char *);
+        void setFromDate(const Date &);
+        void setToDate(const Date &);
+        void setGrade(const unsigned short);
+        void setComment(const char *);
+        void setPhotos(const char *);
 
         char *getDestination() const;
         Date getFromDate() const;

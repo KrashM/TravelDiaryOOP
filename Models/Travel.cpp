@@ -61,17 +61,73 @@ Travel &Travel::operator =(const Travel &other){
 
 }
 
-ostream &operator <<(ostream &os, const Travel &obj){
+ostream &operator <<(ostream &os, const Travel &obj) const{
 
-    os << obj.destination << ' ' << obj.from << ' ' << obj.to << ' ' << (int)obj.grade << ' ' << obj.comment << ' ' << obj.photos;
+    os << obj.destination << ' ' << obj.from << ' ' << obj.to << ' ' << (int)obj.grade << " Comment " << obj.comment << " Photos " << obj.photos;
     return os;
 
 }
 
-istream &operator >>(istream &in, Travel &obj){
+istream &operator >>(istream &is, Travel &obj){
 
-    in >> obj.destination >> obj.from >> obj.to >> obj.grade >> obj.comment >> obj.photos;
-    return in;
+    // Edit this to work with text formating
+    // P.S. It's very error prone
+    std::string temp;
+    is >> temp >> temp >> temp >> temp >> temp >> temp >> temp;
+    std::cout << temp << '\n';
+    is >> obj.destination >> obj.from >> obj.to >> obj.grade >> obj.comment >> obj.photos;
+    return is;
+
+}
+
+void Travel::write(ofstream &ofs) const{
+
+    size_t destSize = strlen(this -> destination);
+    ofs.write((const char *)&destSize, sizeof(size_t));
+    ofs.write(this -> destination, destSize);
+
+    ofs.write((const char *)&this -> from, sizeof(Date));
+
+    ofs.write((const char *)&this -> to, sizeof(Date));
+    
+    ofs.write((const char *)&this -> grade, sizeof(unsigned char));
+
+    size_t commentSize = strlen(this -> comment);
+    ofs.write((const char *)&commentSize, sizeof(size_t));
+    ofs.write(this -> comment, commentSize);
+
+    size_t photosSize = strlen(this -> photos);
+    ofs.write((const char *)&photosSize, sizeof(size_t));
+    ofs.write(this -> photos, photosSize);
+
+}
+
+void Travel::read(ifstream &ifs){
+
+    size_t destSize;
+    ifs.read((char *)&destSize, sizeof(size_t));
+
+    this -> destination = new char[destSize + 1];
+    ifs.read(this -> destination, destSize);
+    this -> destination[destSize] = '\0';
+
+    ifs.read((char *)&this -> from, sizeof(Date));
+    ifs.read((char *)&this -> to, sizeof(Date));
+    ifs.read((char *)&this -> grade, sizeof(unsigned char));
+
+    size_t commentSize;
+    ifs.read((char *)&commentSize, sizeof(size_t));
+
+    this -> comment = new char[commentSize + 1];
+    ifs.read(this -> comment, commentSize);
+    this -> comment[commentSize] = '\0';
+    
+    size_t photosSize;
+    ifs.read((char *)&photosSize, sizeof(size_t));
+
+    this -> photos = new char[photosSize + 1];
+    ifs.read(this -> photos, photosSize);
+    this -> photos[photosSize] = '\0';
 
 }
 
