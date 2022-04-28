@@ -36,8 +36,6 @@ int main(){
     Vector<User> users;
     ifstream ifs("Database/users.db", ios::binary);
 
-    // TODO
-    // Read until the end of file
     while(ifs.peek() != EOF){
 
         User temp;
@@ -46,10 +44,13 @@ int main(){
 
     }
 
+    std::cout << "Users are " << users << '\n';
+
     char username[] = "Krash";
     char password[] = "Helloworld_2";
     char email[] = "Krash@mail.bg";
 
+    // Think about a way to make validation inside the User constructor
     try{ User::validateUsername(username, users); }
     catch(const std::exception &e){ std::cerr << e.what() << '\n'; return -1; }
 

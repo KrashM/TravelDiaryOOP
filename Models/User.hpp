@@ -35,8 +35,10 @@ class User{
         char *getPassword() const;
         char *getEmail() const;
 
-        static void validateUsername(const char *, Vector<User>);
+        static void validateUsername(const char *, Vector<User> &);
         static void validatePassword(const char *);
         static void validateEmail(const char *);
+
+        const char *toString() const;
 
 };

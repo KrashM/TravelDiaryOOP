@@ -95,7 +95,7 @@ char *User::getUsername() const{ return this -> username; }
 char *User::getPassword() const{ return this -> password; }
 char *User::getEmail() const{ return this -> email; }
 
-void User::validateUsername(const char *username, Vector<User> users){
+void User::validateUsername(const char *username, Vector<User> &users){
 
     for(size_t i = 0; i < users.size(); i++)
         if(!strcmp(users[i].getUsername(), username)) throw InvalidFormatException("Username exists");
@@ -146,5 +146,19 @@ void User::validateEmail(const char *email){
         else if(flag && email[i] != mailEnding[++index]) throw InvalidFormatException("Email is invalid");
 
     if(!flag) throw InvalidFormatException("Email is invalid");
+
+}
+
+const char *User::toString() const{
+
+    char *result = new char[strlen(this -> username) + strlen(this -> password) + strlen(this -> email) + 3];
+    strcpy(result, this -> username);
+    strcat(result, " ");
+    strcat(result, this -> password);
+    strcat(result, " ");
+    strcat(result, this -> email);
+    strcat(result, "\0");
+
+    return result;
 
 }
