@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Date.hpp"
-#include <fstream>
+#include "StringChecker.hpp"
+#include "InvalidFormatException.hpp"
+#include "../../includes/Vector.h"
 
 using std::ifstream;
 using std::ofstream;
@@ -10,7 +12,8 @@ using std::ios;
 class Travel{
 
     private:
-        char *destination, *comment, *photos;
+        Vector<char *> photos;
+        char *destination, *comment;
         Date from, to;
         unsigned char grade;
 
@@ -19,7 +22,7 @@ class Travel{
 
     public:
         Travel();
-        Travel(const char *, const Date &, const Date &, const unsigned char, const char *, const char *);
+        Travel(const char *, const Date &, const Date &, const unsigned char, const char *, const Vector<char *> &);
         Travel(const Travel &);
         ~Travel();
 
@@ -35,13 +38,13 @@ class Travel{
         void setToDate(const Date &);
         void setGrade(const unsigned short);
         void setComment(const char *);
-        void setPhotos(const char *);
+        void setPhotos(const Vector<char *> &);
 
         char *getDestination() const;
         Date getFromDate() const;
         Date getToDate() const;
         unsigned char getGrade() const;
         char *getComment() const;
-        char *getPhotos() const;
+        Vector<char *> getPhotos() const;
 
 };

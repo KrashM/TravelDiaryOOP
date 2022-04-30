@@ -7,8 +7,4 @@ InvalidFormatException::InvalidFormatException(const char *message){
 
 }
 
-const char *InvalidFormatException::what() const throw(){
-    
-    return this -> message;
-    
-}
+const char *InvalidFormatException::what() const throw(){ return this -> message; }

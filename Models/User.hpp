@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Travel.hpp"
-#include "../../includes/Vector.h"
 
 class User{
 
@@ -13,6 +12,7 @@ class User{
         
         void erase();
         void copy(const User &);
+        void createUserDB() const;
 
     public:
         User();
@@ -25,19 +25,20 @@ class User{
         void write(ofstream &) const;
         void read(ifstream &);
 
-        void addTravel(const Travel &);
-
         void setUsername(const char *);
         void setPassword(const char *);
         void setEmail(const char *);
+        void addTravel(const Travel &);
 
         char *getUsername() const;
         char *getPassword() const;
         char *getEmail() const;
+        Vector<Travel> getTravels() const;
 
-        static void validateUsername(const char *, Vector<User> &);
+        static void validateUsername(const char *);
         static void validatePassword(const char *);
         static void validateEmail(const char *);
+        static Vector<User> getUsersFromDB();
 
         const char *toString() const;
 

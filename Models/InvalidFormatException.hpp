@@ -3,7 +3,9 @@
 #include <exception>
 #include <cstring>
 
-class InvalidFormatException: public std::exception{
+using std::exception;
+
+class InvalidFormatException: public exception{
 
     private:
         char *message;

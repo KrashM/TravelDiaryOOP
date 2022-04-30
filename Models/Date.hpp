@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <fstream>
 
 using std::istream;
 using std::ostream;
@@ -19,6 +19,7 @@ class Date{
         Date(const Date &);
 
         Date &operator =(const Date &);
+        friend bool operator >(const Date &, const Date &);
         friend ostream &operator <<(ostream &, const Date &);
         friend istream &operator >>(istream &, Date &);
 

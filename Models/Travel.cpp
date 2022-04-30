@@ -1,11 +1,9 @@
 #include "Travel.hpp"
-#include <cstring>
 
 void Travel::erase(){
 
     delete[] this -> destination;
     delete[] this -> comment;
-    delete[] this -> photos;
 
 }
 
@@ -22,13 +20,17 @@ void Travel::copy(const Travel &other){
     this -> comment = new char[strlen(other.comment) + 1];
     strcpy(this -> comment, other.comment);
 
-    this -> photos = new char[strlen(other.photos) + 1];
-    strcpy(this -> photos, other.photos);
+    this -> photos = other.photos;
 
 }
 
-Travel::Travel(): destination(nullptr), from(Date()), to(Date()), grade(0), comment(nullptr), photos(nullptr){}
-Travel::Travel(const char *destination, const Date &from, const Date &to, const unsigned char grade, const char *comment, const char *photos){
+Travel::Travel(): destination(nullptr), from(Date()), to(Date()), grade(0), comment(nullptr){}
+Travel::Travel(const char *destination, const Date &from, const Date &to, const unsigned char grade, const char *comment, const Vector<char *> &photos){
+
+    if(to > from) throw InvalidFormatException("To date is before from date");
+    if(grade < 0 || grade > 5) throw InvalidFormatException("Grade is invalid");
+    for(size_t i = 0; i < photos.size(); i++)
+        if(!StringChecker::isPhoto(photos[i])) throw("Photo is invalid");
 
     this -> destination = new char[strlen(destination) + 1];
     strcpy(this -> destination, destination);
@@ -41,8 +43,7 @@ Travel::Travel(const char *destination, const Date &from, const Date &to, const 
     this -> comment = new char[strlen(comment) + 1];
     strcpy(this -> comment, comment);
 
-    this -> photos = new char[strlen(photos) + 1];
-    strcpy(this -> photos, photos);
+    this -> photos = photos;
 
 }
 Travel::Travel(const Travel &other){ this -> copy(other); }
@@ -75,7 +76,7 @@ istream &operator >>(istream &is, Travel &obj){
     std::string temp;
     is >> temp >> temp >> temp >> temp >> temp >> temp >> temp;
     std::cout << temp << '\n';
-    is >> obj.destination >> obj.from >> obj.to >> obj.grade >> obj.comment >> obj.photos;
+    is >> obj.destination >> obj.from >> obj.to >> obj.grade >> obj.comment;
     return is;
 
 }
@@ -96,9 +97,9 @@ void Travel::write(ofstream &ofs) const{
     ofs.write((const char *)&commentSize, sizeof(size_t));
     ofs.write(this -> comment, commentSize);
 
-    size_t photosSize = strlen(this -> photos);
-    ofs.write((const char *)&photosSize, sizeof(size_t));
-    ofs.write(this -> photos, photosSize);
+    // size_t photosSize = photos.size();
+    // ofs.write((const char *)&photosSize, sizeof(size_t));
+    ofs.write((const char*)&this -> photos, sizeof(Vector<char *>));
 
 }
 
@@ -122,12 +123,14 @@ void Travel::read(ifstream &ifs){
     ifs.read(this -> comment, commentSize);
     this -> comment[commentSize] = '\0';
     
-    size_t photosSize;
-    ifs.read((char *)&photosSize, sizeof(size_t));
+    // size_t photosSize;
+    // ifs.read((char *)&photosSize, sizeof(size_t));
 
-    this -> photos = new char[photosSize + 1];
-    ifs.read(this -> photos, photosSize);
-    this -> photos[photosSize] = '\0';
+    // this -> photos = new char[photosSize + 1];
+    // ifs.read(this -> photos, photosSize);
+    // this -> photos[photosSize] = '\0';
+
+    ifs.read((char *)&this -> photos, sizeof(Vector<char *>));
 
 }
 
@@ -137,28 +140,20 @@ void Travel::setDestination(const char *destination){
     strcpy(this -> destination, destination);
 
 }
-
 void Travel::setFromDate(const Date &from){ this -> from = from; }
 void Travel::setToDate(const Date &to){ this -> to = to; }
 void Travel::setGrade(const unsigned short grade){ this -> grade = grade; }
-
 void Travel::setComment(const char *comment){
     
     this -> comment = new char[strlen(comment) + 1];
     strcpy(this -> comment, comment);
 
 }
-
-void Travel::setPhotos(const char *photos){
-    
-    this -> photos = new char[strlen(photos) + 1];
-    strcpy(this -> photos, photos);
-
-}
+void Travel::setPhotos(const Vector<char *> &photos){ this -> photos = photos; }
 
 char *Travel::getDestination() const{ return this -> destination; }
 Date Travel::getFromDate() const{ return this -> from; }
 Date Travel::getToDate() const{ return this -> to; }
 unsigned char Travel::getGrade() const{ return this -> grade; }
 char *Travel::getComment() const{ return this -> comment; }
-char *Travel::getPhotos() const{ return this -> photos; }
+Vector<char *> Travel::getPhotos() const{ return this -> photos; }

@@ -19,6 +19,8 @@ Date &Date::operator =(const Date &other){
 
 }
 
+bool operator >(const Date &lhs, const Date &rhs){ return lhs.getYear() > rhs.getYear() && lhs.getMounth() > rhs.getMounth() && lhs.getDay() > rhs.getDay(); }
+
 ostream &operator <<(ostream &os, const Date &obj){
 
     os << obj.toString();

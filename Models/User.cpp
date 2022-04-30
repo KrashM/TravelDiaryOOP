@@ -1,5 +1,4 @@
 #include "User.hpp"
-#include "InvalidFormatException.hpp"
 
 void User::erase(){
 
@@ -21,8 +20,22 @@ void User::copy(const User &other){
 
 }
 
+void User::createUserDB() const{
+
+    char *path = new char[strlen(this -> username) + 13];
+    strcpy(path, "Database/");
+    strcat(path, this -> username);
+    strcat(path, ".db");
+    ofstream { path };
+
+}
+
 User::User(): username(nullptr), password(nullptr), email(nullptr){}
 User::User(const char *username, const char *password, const char *email){
+
+    User::validateUsername(username);
+    User::validatePassword(password);
+    User::validateEmail(email);
 
     this -> username = new char[strlen(username) + 1];
     strcpy(this -> username, username);
@@ -30,6 +43,8 @@ User::User(const char *username, const char *password, const char *email){
     strcpy(this -> password, password);
     this -> email = new char[strlen(email) + 1];
     strcpy(this -> email, email);
+
+    this -> createUserDB();
 
 }
 User::User(const User &other){ this -> copy(other); }
@@ -85,67 +100,73 @@ void User::read(ifstream &ifs){
 
 }
 
-void User::addTravel(const Travel &travel){ this -> travels.pushBack(travel); }
-
 void User::setUsername(const char *username){ this -> username = new char[strlen(username) + 1]; strcpy(this -> username, username); }
 void User::setPassword(const char *password){ this -> password = new char[strlen(password) + 1]; strcpy(this -> password, password); }
 void User::setEmail(const char *email){ this -> email = new char[strlen(email) + 1]; strcpy(this -> email, email); }
+void User::addTravel(const Travel &travel){ this -> travels.pushBack(travel); }
 
 char *User::getUsername() const{ return this -> username; }
 char *User::getPassword() const{ return this -> password; }
 char *User::getEmail() const{ return this -> email; }
+Vector<Travel> User::getTravels() const{ return this -> travels; }
 
-void User::validateUsername(const char *username, Vector<User> &users){
+void User::validateUsername(const char *username){
 
-    for(size_t i = 0; i < users.size(); i++)
-        if(!strcmp(users[i].getUsername(), username)) throw InvalidFormatException("Username exists");
+    const size_t usernameSize = strlen(username);
+    for(size_t i = 0; i < usernameSize; i++)
+        if(!(StringChecker::isLower(username[i])
+        || StringChecker::isUpper(username[i])
+        || StringChecker::isDigit(username[i])))
+            throw InvalidFormatException("Username contains unknown characters");
+
+    // Other way is to check if database exists for the given user
+    char *path = new char[strlen(username) + 13];
+    strcpy(path, "Database/");
+    strcat(path, username);
+    strcat(path, ".db");
+    ifstream temp(path);
+    bool exists = temp.good();
+    temp.close();
+    if(exists) throw InvalidFormatException("Username exists");
+
+    // Check if username exists in the user database
+    // Vector<User> users;
+    // ifstream ifs("Database/users.db", ios::binary);
+
+    // while(ifs.peek() != EOF){
+
+    //     User temp;
+    //     temp.read(ifs);
+    //     users.pushBack(temp);
+
+    // }
+
+    // ifs.close();
+
+    // for(size_t i = 0; i < users.size(); i++)
+    //     if(!strcmp(users[i].getUsername(), username)) throw InvalidFormatException("Username exists");
 
 }
 
-bool contains(const char *symbols, const char symbol){
+void User::validatePassword(const char *password){ if(!StringChecker::isPassword(password)) throw InvalidFormatException("Password does not meet requirements!"); }
+void User::validateEmail(const char *email){ if(!StringChecker::isEmail(email)) throw InvalidFormatException("Email is invalid"); }
 
-    bool flag = false;
-    for(size_t i = 0; i < strlen(symbols); i++)
-        flag = flag || symbols[i] == symbol;
+Vector<User> User::getUsersFromDB(){
 
-    return flag;
+    Vector<User> users;
+    ifstream ifs("Database/users.db", ios::binary);
 
-}
+    while(ifs.peek() != EOF){
 
-void User::validatePassword(const char *password){
-
-    const char lowerCaseLetters[] = "abcdefghijklmnopqrstuvwxyz";
-    const char upperCaseLetters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const char digits[] = "0123456789";
-    const char otherChars[] = "~`!@#$%^&*()_-+={[}]|\\:;\"\'<,>.?/";
-
-    bool hasLowerCase = false, hasUpperCase = false, hasDigit = false, hasOtherChar = false;
-
-    for(size_t i = 0; i < strlen(password); i++){
-
-        if(hasLowerCase && hasUpperCase && hasDigit && hasOtherChar) return;
-
-        hasLowerCase = hasLowerCase || contains(lowerCaseLetters, password[i]);
-        hasUpperCase = hasUpperCase || contains(upperCaseLetters, password[i]);
-        hasDigit = hasDigit || contains(digits, password[i]);
-        hasOtherChar = hasOtherChar || contains(otherChars, password[i]);
+        User temp;
+        temp.read(ifs);
+        users.pushBack(temp);
 
     }
 
-    if(!(hasLowerCase && hasUpperCase && hasDigit && hasOtherChar)) throw InvalidFormatException("Password does not meet requirements!");
+    ifs.close();
 
-}
-
-void User::validateEmail(const char *email){
-
-    char mailEnding[] = "@mail.bg";
-    bool flag = false;
-    size_t index = 0;
-    for(size_t i = 0; i < strlen(email); i++)
-        if(!flag && email[i] == mailEnding[index]) flag = true;
-        else if(flag && email[i] != mailEnding[++index]) throw InvalidFormatException("Email is invalid");
-
-    if(!flag) throw InvalidFormatException("Email is invalid");
+    return users;
 
 }
 
