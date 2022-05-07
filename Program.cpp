@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Models/User.hpp"
+#include "Models/Context.hpp"
 
 void registerUser(const User &newUser){
 
@@ -62,27 +62,27 @@ void createTravel(){
 
 int main(){
 
-    char username[] = "Krash";
-    char password[] = "Helloworld_2";
-    char email[] = "Krash@mail.bg";
+    // char username[] = "Krash";
+    // char password[] = "Helloworld_2";
+    // char email[] = "Krash@mail.bg";
 
-    try{
+    // try{
 
-        User newUser(username, password, email);
-        registerUser(newUser);
+    //     User newUser(username, password, email);
+    //     registerUser(newUser);
 
-    }
-    catch(const std::exception &e){
+    // }
+    // catch(const std::exception &e){
 
-        std::cerr << e.what() << '\n';
-        return -1;
+    //     std::cerr << e.what() << '\n';
+    //     return -1;
 
-    }
+    // }
     
     Vector<char *> photos;
-    char *photo1;
-    char *photo2;
-    char *photo3;
+    char *photo1 = new char[strlen("burgas.jpeg") + 1];
+    char *photo2 = new char[strlen("locumfest.png") + 1];
+    char *photo3 = new char[strlen("sunrise_on_the_coast.jpeg") + 1];
     strcpy(photo1, "burgas.jpeg");
     strcpy(photo2, "locumfest.png");
     strcpy(photo3, "sunrise_on_the_coast.jpeg");
@@ -91,8 +91,7 @@ int main(){
     photos.pushBack(photo3);
     Travel myTravel("Burgas", Date(5, 7, 2019), Date(29, 7, 2019), 5, "A beautiful city on the\nBlack Sea coast. I\nspent two\nunforgettable weeks\nthere, meeting new\npeople.", photos);
 
-    // Something wrong with the travels
-    Vector<User> users = User::getUsersFromDB();
+    Vector<User> users = Context::getUsersFromDB();
     for(size_t i = 0; i < users.size(); i++) if(!strcmp(users[i].getUsername(), "Krash")) users[i].addTravel(myTravel);
     Vector<Travel> travels = getAllTravelToDestination(users, "Burgas");
     for(size_t i = 0; i < travels.size(); i++) std::cout << travels[i].getComment() << '\n';

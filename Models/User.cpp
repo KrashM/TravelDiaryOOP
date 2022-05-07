@@ -63,6 +63,13 @@ User &User::operator =(const User &other){
 
 }
 
+ostream &operator <<(ostream &os, const User &obj){
+
+    os << obj.getUsername() << ' ' << obj.getEmail();
+    return os;
+
+}
+
 void User::write(ofstream &ofs) const{
 
     size_t usernameLenght = strlen(this -> username);
@@ -150,25 +157,6 @@ void User::validateUsername(const char *username){
 
 void User::validatePassword(const char *password){ if(!StringChecker::isPassword(password)) throw InvalidFormatException("Password does not meet requirements!"); }
 void User::validateEmail(const char *email){ if(!StringChecker::isEmail(email)) throw InvalidFormatException("Email is invalid"); }
-
-Vector<User> User::getUsersFromDB(){
-
-    Vector<User> users;
-    ifstream ifs("Database/users.db", ios::binary);
-
-    while(ifs.peek() != EOF){
-
-        User temp;
-        temp.read(ifs);
-        users.pushBack(temp);
-
-    }
-
-    ifs.close();
-
-    return users;
-
-}
 
 const char *User::toString() const{
 

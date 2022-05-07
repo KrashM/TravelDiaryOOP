@@ -66,8 +66,8 @@ class StringChecker{
 
             size_t offsetPng = photoSize - strlen(png);
 
-            for(size_t i = photoSize - 1; i >= 0; --i)
-                if(i - offsetPng >= 0){ if(photo[i] != png[i - offsetPng]) return false; }
+            for(size_t i = photoSize - 1; i != (size_t)(-1); --i)
+                if(i >= offsetPng){ if(photo[i] != png[i - offsetPng]) return false; }
                 else if(!(isLower(photo[i]) || isUpper(photo[i]) || isUnder(photo[i]))) return false;
 
             return true;
@@ -77,8 +77,8 @@ class StringChecker{
 
             size_t offsetJpeg = photoSize - strlen(jpeg);
 
-            for(size_t i = photoSize - 1; i >= 0; --i)
-                if(i - offsetJpeg >= 0){ if(photo[i] != jpeg[i - offsetJpeg]) return false; }
+            for(size_t i = photoSize - 1; i != (size_t)(-1); --i)
+                if(i >= offsetJpeg){ if(photo[i] != jpeg[i - offsetJpeg]) return false; }
                 else if(!(isLower(photo[i]) || isUpper(photo[i]) || isUnder(photo[i]))) return false;
 
             return true;

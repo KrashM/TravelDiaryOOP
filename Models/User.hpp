@@ -21,6 +21,7 @@ class User{
         ~User();
 
         User &operator =(const User &);
+        friend ostream &operator <<(ostream &, const User &);
 
         void write(ofstream &) const;
         void read(ifstream &);
@@ -38,7 +39,6 @@ class User{
         static void validateUsername(const char *);
         static void validatePassword(const char *);
         static void validateEmail(const char *);
-        static Vector<User> getUsersFromDB();
 
         const char *toString() const;
 

@@ -24,13 +24,14 @@ void Travel::copy(const Travel &other){
 
 }
 
-Travel::Travel(): destination(nullptr), from(Date()), to(Date()), grade(0), comment(nullptr){}
+Travel::Travel(): destination(new char[1]), from(Date()), to(Date()), grade(0), comment(new char[1]){}
 Travel::Travel(const char *destination, const Date &from, const Date &to, const unsigned char grade, const char *comment, const Vector<char *> &photos){
 
     if(to > from) throw InvalidFormatException("To date is before from date");
     if(grade < 0 || grade > 5) throw InvalidFormatException("Grade is invalid");
     for(size_t i = 0; i < photos.size(); i++)
-        if(!StringChecker::isPhoto(photos[i])) throw("Photo is invalid");
+        if(!StringChecker::isPhoto(photos[i]))
+            throw InvalidFormatException("Photo is invalid");
 
     this -> destination = new char[strlen(destination) + 1];
     strcpy(this -> destination, destination);
@@ -64,7 +65,7 @@ Travel &Travel::operator =(const Travel &other){
 
 ostream &operator <<(ostream &os, const Travel &obj){
 
-    os << obj.destination << ' ' << obj.from << ' ' << obj.to << ' ' << (int)obj.grade << " Comment " << obj.comment << " Photos " << obj.photos;
+    os << obj.destination << '\n' << obj.from << '\n' << obj.to << '\n' << (int)obj.grade << "\nComment\n" << obj.comment << "\nPhotos\n" << obj.photos;
     return os;
 
 }
