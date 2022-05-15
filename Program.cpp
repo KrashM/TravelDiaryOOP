@@ -212,25 +212,3 @@ int main(){
     authentication();
 
 }
-
-/*
-
-2
-Hristo
-Hello_world2
-1
-Sofia
-22 06 2002
-26 06 2002
-5
-A very bussy city filled with cool stuff
-sunset.png hello.jpeg
-2
-Sofia
-
-1
-Krash
-Hi!there1
-Krash@mail.bg
-
-*/

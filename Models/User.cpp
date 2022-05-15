@@ -55,8 +55,7 @@ User::User(const char *username, const char *password, const char *email){
 
 
     this -> setPersonalDBPath();
-    std::cout << this -> personalDBPath << '\n';
-    // this -> createUserDB();
+    this -> createUserDB();
 
 }
 User::User(const User &other){ this -> copy(other); }
