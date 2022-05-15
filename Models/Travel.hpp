@@ -3,7 +3,7 @@
 #include "Date.hpp"
 #include "StringChecker.hpp"
 #include "InvalidFormatException.hpp"
-#include "../../includes/Vector.h"
+#include "Vector.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -12,8 +12,7 @@ using std::ios;
 class Travel{
 
     private:
-        Vector<char *> photos;
-        char *destination, *comment;
+        char *destination, *comment, *photos;
         Date from, to;
         unsigned char grade;
 
@@ -22,13 +21,12 @@ class Travel{
 
     public:
         Travel();
-        Travel(const char *, const Date &, const Date &, const unsigned char, const char *, const Vector<char *> &);
+        Travel(const char *, const Date &, const Date &, const unsigned char, const char *, const char *);
         Travel(const Travel &);
         ~Travel();
 
         Travel &operator =(const Travel &);
         friend ostream &operator <<(ostream &, const Travel &);
-        friend istream &operator >>(istream &, Travel &);
 
         void write(ofstream &) const;
         void read(ifstream &);
@@ -38,13 +36,13 @@ class Travel{
         void setToDate(const Date &);
         void setGrade(const unsigned short);
         void setComment(const char *);
-        void setPhotos(const Vector<char *> &);
+        void setPhotos(const char *);
 
         char *getDestination() const;
         Date getFromDate() const;
         Date getToDate() const;
         unsigned char getGrade() const;
         char *getComment() const;
-        Vector<char *> getPhotos() const;
+        char * getPhotos() const;
 
 };

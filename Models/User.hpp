@@ -5,13 +5,12 @@
 class User{
 
     private:
-        char *username;
-        char *password;
-        char *email;
+        char *username, *password, *email, *personalDBPath;
         Vector<Travel> travels;
         
         void erase();
         void copy(const User &);
+        void setPersonalDBPath();
         void createUserDB() const;
 
     public:
@@ -34,11 +33,12 @@ class User{
         char *getUsername() const;
         char *getPassword() const;
         char *getEmail() const;
-        Vector<Travel> getTravels() const;
+        Vector<Travel> &getTravels();
 
-        static void validateUsername(const char *);
-        static void validatePassword(const char *);
-        static void validateEmail(const char *);
+        void validateUsername(const char *);
+        void validatePassword(const char *);
+        void validateEmail(const char *);
+        bool usernameExists(const char *);
 
         const char *toString() const;
 

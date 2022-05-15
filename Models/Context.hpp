@@ -5,6 +5,6 @@
 class Context{
 
     public:
-        static Vector<User> getUsersFromDB();
+        static void getUsersFromDB(Vector<User> &);
 
 };

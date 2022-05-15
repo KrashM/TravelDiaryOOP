@@ -1,8 +1,7 @@
 #include "Context.hpp"
 
-Vector<User> Context::getUsersFromDB(){
+void Context::getUsersFromDB(Vector <User> &users){
 
-    Vector<User> users;
     ifstream ifs("Database/users.db", ios::binary);
 
     while(ifs.peek() != EOF){
@@ -14,7 +13,5 @@ Vector<User> Context::getUsersFromDB(){
     }
 
     ifs.close();
-
-    return users;
 
 }

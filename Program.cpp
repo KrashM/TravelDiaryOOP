@@ -1,27 +1,68 @@
 #include <iostream>
+#include <stdlib.h>
 #include "Models/Context.hpp"
 
-void registerUser(const User &newUser){
+using std::cin;
+using std::cout;
+using std::cerr;
 
-    ofstream ofs("Database/users.db", ios::binary | ios::app | ios::ate);
-    newUser.write(ofs);
-    ofs.close();
+void registerUser(User &currenUser){
+
+    char username[DEFAULT_STRING_SIZE], password[DEFAULT_STRING_SIZE], email[DEFAULT_STRING_SIZE];
+
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+    cout << "Enter email: ";
+    cin >> email;
+    cin.ignore();
+
+    try{ currenUser = User(username, password, email); }
+    catch(const InvalidFormatException &e){ throw e; }
 
 }
 
-void loginUser(){
+User &loginUser(Vector<User> &users){
 
-    char *username = new char[1024], *password = new char[1024];
-    std::cin >> username >> password;
+    char username[DEFAULT_STRING_SIZE], password[DEFAULT_STRING_SIZE];
+
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+    cin.ignore();
+
+    bool correctUsername = false, correctPassword;
+    size_t index = 0;
+
+    for(size_t i = 0; i < users.size(); i++)
+        if(!strcmp(users[i].getUsername(), username)){
+
+            correctUsername = true;
+            index = i;
+            break;
+
+        }
+
+    correctPassword = !strcmp(users[index].getPassword(), password); 
+
+    if(!correctUsername) throw InvalidFormatException("Username does not exist!");
+    if(!correctPassword) throw InvalidFormatException("Wrong password!");
+
+    return users[index];
 
 }
 
+Vector<Travel> getAllTravelToDestination(Vector<User> &users){
 
+    char destination[DEFAULT_STRING_SIZE];
 
-Vector<Travel> getAllTravelToDestination(const Vector<User> &users, const char *destination){
+    cout << "Where do you want to go?\n: ";
+    cin.getline(destination, DEFAULT_STRING_SIZE);
 
     Vector<Travel> result;
-
+    
     for(size_t i = 0; i < users.size(); i++){
 
         Vector<Travel> travels = users[i].getTravels();
@@ -31,69 +72,165 @@ Vector<Travel> getAllTravelToDestination(const Vector<User> &users, const char *
 
     }
 
-    return result;
+    if(result.size()) return result;
+    throw InvalidFormatException("Nobody has traveled to this destination");
 
 }
 
-void createTravel(){
+void addTravel(User &user){
 
-    // Travel otherTravel("Sofia", Date(2, 5, 2018), Date(30, 12, 2019), 3, "Big city with loads of oppurtunities\nfor business and money.", "sofia.jpeg\nVitosha.png\nflat.jpeg");
+    char destination[DEFAULT_STRING_SIZE], comment[DEFAULT_STRING_SIZE], photos[DEFAULT_STRING_SIZE];
+    unsigned char grade;
+    Date start, end;
 
-    // std::ofstream ofs("my.db", std::ios::app | std::ios::binary | std::ios::ate);
-    // myTravel.write(ofs);
-    // otherTravel.write(ofs);
-    // ofs.close();
+    cout << "Enter destination\n: ";
+    cin.getline(destination, DEFAULT_STRING_SIZE);
 
-    // Travel newTravel;
-    // std::ifstream ifs("my.db", std::ios::binary);
-    // newTravel.read(ifs);
-    // newTravel.read(ifs);
+    cout << "Enter from date\n: ";
+    cin >> start;
+    cout << "Enter to date\n: ";
+    cin >> end;
 
-    // std::cout << newTravel.getDestination() << '\n'
-    //         << newTravel.getFromDate().toString() << '\n'
-    //         << newTravel.getToDate().toString() << '\n'
-    //         << (int)newTravel.getGrade() << '\n'
-    //         << newTravel.getComment() << '\n'
-    //         << newTravel.getPhotos() << '\n';
+    cout << "Enter grade\n: ";
+    cin >> grade;
+    cin.ignore();
 
-    // ifs.close();
+    cout << "Enter comment\n: ";
+    cin.getline(comment, DEFAULT_STRING_SIZE);
+
+    cout << "Enter photos(\"end\" to end your input)\n: ";
+    cin.getline(photos, DEFAULT_STRING_SIZE);
+
+    Travel newTravel;
+    try{ newTravel = Travel(destination, start, end, grade, comment, photos); }
+    catch(const InvalidFormatException &e){ throw e; }
+
+    user.addTravel(newTravel);
+
+}
+
+void platform(User &currentUser, Vector<User> &users){
+
+    unsigned short choice = 0;
+
+    while(choice != 3){
+
+        system("cls");
+        cout << "Select one:\n1.Add travel\n2.Search travel destination\n3.Logout\n: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice){
+
+            case 1:
+                try{ for(size_t i = 0; i < users.size(); i++) if(!strcmp(users[i].getUsername(), currentUser.getUsername())) addTravel(users[i]); }
+                catch(const InvalidFormatException &e){ cerr << e.what() << '\n'; cin.get(); }
+                break;
+
+            case 2:
+                try{
+                    
+                    Vector<Travel> travels = getAllTravelToDestination(users);
+                    size_t sumGrade = 0;
+
+                    for(size_t i = 0; i < travels.size(); i++){
+
+                        cout << "From: " << travels[i].getFromDate()
+                            << "\nTo: " << travels[i].getToDate()
+                            << "\nGraded: " << travels[i].getGrade()
+                            << "\nCommented: " << travels[i].getComment()
+                            << "\nPhotos: " << travels[i].getPhotos() << "\n\n";
+
+                        sumGrade += travels[i].getGrade() - '0';
+
+                    }
+
+                    cout << "Average grade is: " << sumGrade * 1.0 / travels.size() << '\n';
+                    cin.get();
+                    
+                }
+                catch(const InvalidFormatException &e){ cerr << e.what() << '\n'; cin.get(); }
+                break;
+
+            default:
+                break;
+
+        }
+        
+    }
+
+}
+
+void save(const Vector<User> &users){
+
+    ofstream ofs("Database/users.db", ios::binary | ios::trunc);
+    for(size_t i = 0; i < users.size(); i++)
+        users[i].write(ofs);
+    ofs.close();
+
+}
+
+void authentication(){
+
+    Vector<User> users;
+    Context::getUsersFromDB(users);
+    unsigned short choice = 0;
+    User currentUser;
+
+    while(choice != 3){
+
+        system("cls");
+        cout << "Welcome to the platoform\nSelect one of the following:\n1.Register\n2.Log in\n3.Exit\n: ";
+        cin >> choice;
+
+        switch (choice){
+
+            case 1:
+                try{ registerUser(currentUser); users.pushBack(currentUser); platform(currentUser, users); }
+                catch(const InvalidFormatException &e){ cerr << e.what() << '\n'; cin.get(); }
+                break;
+            
+            case 2:
+                try{ currentUser = loginUser(users); platform(currentUser, users); }
+                catch(const InvalidFormatException &e){ cerr << e.what() << '\n'; cin.get(); }
+
+            case 3:
+                save(users);
+                break;
+            
+            default:
+                break;
+
+        }
+
+    }
 
 }
 
 int main(){
 
-    // char username[] = "Krash";
-    // char password[] = "Helloworld_2";
-    // char email[] = "Krash@mail.bg";
-
-    // try{
-
-    //     User newUser(username, password, email);
-    //     registerUser(newUser);
-
-    // }
-    // catch(const std::exception &e){
-
-    //     std::cerr << e.what() << '\n';
-    //     return -1;
-
-    // }
-    
-    Vector<char *> photos;
-    char *photo1 = new char[strlen("burgas.jpeg") + 1];
-    char *photo2 = new char[strlen("locumfest.png") + 1];
-    char *photo3 = new char[strlen("sunrise_on_the_coast.jpeg") + 1];
-    strcpy(photo1, "burgas.jpeg");
-    strcpy(photo2, "locumfest.png");
-    strcpy(photo3, "sunrise_on_the_coast.jpeg");
-    photos.pushBack(photo1);
-    photos.pushBack(photo2);
-    photos.pushBack(photo3);
-    Travel myTravel("Burgas", Date(5, 7, 2019), Date(29, 7, 2019), 5, "A beautiful city on the\nBlack Sea coast. I\nspent two\nunforgettable weeks\nthere, meeting new\npeople.", photos);
-
-    Vector<User> users = Context::getUsersFromDB();
-    for(size_t i = 0; i < users.size(); i++) if(!strcmp(users[i].getUsername(), "Krash")) users[i].addTravel(myTravel);
-    Vector<Travel> travels = getAllTravelToDestination(users, "Burgas");
-    for(size_t i = 0; i < travels.size(); i++) std::cout << travels[i].getComment() << '\n';
+    authentication();
 
 }
+
+/*
+
+2
+Hristo
+Hello_world2
+1
+Sofia
+22 06 2002
+26 06 2002
+5
+A very bussy city filled with cool stuff
+sunset.png hello.jpeg
+2
+Sofia
+
+1
+Krash
+Hi!there1
+Krash@mail.bg
+
+*/

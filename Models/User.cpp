@@ -5,6 +5,7 @@ void User::erase(){
     delete[] this -> username;
     delete[] this -> password;
     delete[] this -> email;
+    delete[] this -> personalDBPath;
 
 }
 
@@ -16,26 +17,34 @@ void User::copy(const User &other){
     strcpy(this -> password, other.password);
     this -> email = new char[strlen(other.email) + 1];
     strcpy(this -> email, other.email);
+    this -> personalDBPath = new char[strlen(other.personalDBPath + 1)];
+    strcpy(this -> personalDBPath, other.personalDBPath);
     this -> travels = other.travels;
 
 }
 
-void User::createUserDB() const{
+void User::setPersonalDBPath(){
 
-    char *path = new char[strlen(this -> username) + 13];
-    strcpy(path, "Database/");
-    strcat(path, this -> username);
-    strcat(path, ".db");
-    ofstream { path };
+    this -> personalDBPath = new char[strlen(this -> username) + 13];
+    strcpy(this -> personalDBPath, "Database/");
+    strcat(this -> personalDBPath, this -> username);
+    strcat(this -> personalDBPath, ".db");
 
 }
 
-User::User(): username(nullptr), password(nullptr), email(nullptr){}
+void User::createUserDB() const{ ofstream { this -> personalDBPath }; }
+
+User::User(): username(nullptr), password(nullptr), email(nullptr), personalDBPath(nullptr){}
 User::User(const char *username, const char *password, const char *email){
 
-    User::validateUsername(username);
-    User::validatePassword(password);
-    User::validateEmail(email);
+    try{
+
+        User::validateUsername(username);
+        User::validatePassword(password);
+        User::validateEmail(email);
+    
+    }
+    catch(const InvalidFormatException &e){ throw e; }
 
     this -> username = new char[strlen(username) + 1];
     strcpy(this -> username, username);
@@ -44,7 +53,10 @@ User::User(const char *username, const char *password, const char *email){
     this -> email = new char[strlen(email) + 1];
     strcpy(this -> email, email);
 
-    this -> createUserDB();
+
+    this -> setPersonalDBPath();
+    std::cout << this -> personalDBPath << '\n';
+    // this -> createUserDB();
 
 }
 User::User(const User &other){ this -> copy(other); }
@@ -84,7 +96,12 @@ void User::write(ofstream &ofs) const{
     ofs.write((const char *)&emailLenght, sizeof(size_t));
     ofs.write(this -> email, emailLenght);
 
+    ofstream personalDB(this -> personalDBPath, ios::binary | ios::trunc);
+    this -> travels.write(personalDB);
+    personalDB.close();
+
 }
+
 void User::read(ifstream &ifs){
 
     size_t usernameLenght;
@@ -97,13 +114,19 @@ void User::read(ifstream &ifs){
     ifs.read((char *)&passwordLenght, sizeof(size_t));
     this -> password = new char[passwordLenght + 1];
     ifs.read(this -> password, passwordLenght);
-    this -> username[passwordLenght] = '\0';
+    this -> password[passwordLenght] = '\0';
     
     size_t emailLenght;
     ifs.read((char *)&emailLenght, sizeof(size_t));
     this -> email = new char[emailLenght + 1];
     ifs.read(this -> email, emailLenght);
-    this -> username[emailLenght] = '\0';
+    this -> email[emailLenght] = '\0';
+
+    this -> setPersonalDBPath();
+    
+    ifstream personalDB(this -> personalDBPath, ios::binary);
+    this -> travels.read(personalDB);
+    personalDB.close();
 
 }
 
@@ -115,7 +138,7 @@ void User::addTravel(const Travel &travel){ this -> travels.pushBack(travel); }
 char *User::getUsername() const{ return this -> username; }
 char *User::getPassword() const{ return this -> password; }
 char *User::getEmail() const{ return this -> email; }
-Vector<Travel> User::getTravels() const{ return this -> travels; }
+Vector<Travel> &User::getTravels(){ return this -> travels; }
 
 void User::validateUsername(const char *username){
 
@@ -126,32 +149,15 @@ void User::validateUsername(const char *username){
         || StringChecker::isDigit(username[i])))
             throw InvalidFormatException("Username contains unknown characters");
 
-    // Other way is to check if database exists for the given user
-    char *path = new char[strlen(username) + 13];
-    strcpy(path, "Database/");
-    strcat(path, username);
-    strcat(path, ".db");
-    ifstream temp(path);
+    char tempPath[strlen(username) + 13];
+    strcpy(tempPath, "Database/");
+    strcat(tempPath, username);
+    strcat(tempPath, ".db");
+    
+    ifstream temp(tempPath);
     bool exists = temp.good();
     temp.close();
     if(exists) throw InvalidFormatException("Username exists");
-
-    // Check if username exists in the user database
-    // Vector<User> users;
-    // ifstream ifs("Database/users.db", ios::binary);
-
-    // while(ifs.peek() != EOF){
-
-    //     User temp;
-    //     temp.read(ifs);
-    //     users.pushBack(temp);
-
-    // }
-
-    // ifs.close();
-
-    // for(size_t i = 0; i < users.size(); i++)
-    //     if(!strcmp(users[i].getUsername(), username)) throw InvalidFormatException("Username exists");
 
 }
 

@@ -4,6 +4,7 @@ void Travel::erase(){
 
     delete[] this -> destination;
     delete[] this -> comment;
+    delete[] this -> photos;
 
 }
 
@@ -20,18 +21,34 @@ void Travel::copy(const Travel &other){
     this -> comment = new char[strlen(other.comment) + 1];
     strcpy(this -> comment, other.comment);
 
-    this -> photos = other.photos;
+    this -> photos = new char[strlen(other.photos) + 1];
+    strcpy(this -> photos, other.photos);
 
 }
 
-Travel::Travel(): destination(new char[1]), from(Date()), to(Date()), grade(0), comment(new char[1]){}
-Travel::Travel(const char *destination, const Date &from, const Date &to, const unsigned char grade, const char *comment, const Vector<char *> &photos){
+Travel::Travel(): destination(new char[1]), from(Date()), to(Date()), grade(0), comment(new char[1]), photos(new char[1]){}
+Travel::Travel(const char *destination, const Date &from, const Date &to, const unsigned char grade, const char *comment, const char *photos){
 
     if(to > from) throw InvalidFormatException("To date is before from date");
-    if(grade < 0 || grade > 5) throw InvalidFormatException("Grade is invalid");
-    for(size_t i = 0; i < photos.size(); i++)
-        if(!StringChecker::isPhoto(photos[i]))
-            throw InvalidFormatException("Photo is invalid");
+    if(grade < '0' || grade > '5') throw InvalidFormatException("Grade is invalid");
+    size_t photosSize = strlen(photos);
+    for(size_t i = 0; i < photosSize; i++){
+
+        char temp[DEFAULT_STRING_SIZE];
+        memset(temp, '\0', DEFAULT_STRING_SIZE);
+        size_t j = 0;
+        for(j = 0; j + i < photosSize; j++){
+
+            if(photos[i + j] == ' ') break;
+            temp[j] = photos[i + j];
+
+        }
+
+        i += j;
+
+        if(!StringChecker::isPhoto(temp)) throw InvalidFormatException("Photo is invalid");
+
+    }
 
     this -> destination = new char[strlen(destination) + 1];
     strcpy(this -> destination, destination);
@@ -44,7 +61,8 @@ Travel::Travel(const char *destination, const Date &from, const Date &to, const 
     this -> comment = new char[strlen(comment) + 1];
     strcpy(this -> comment, comment);
 
-    this -> photos = photos;
+    this -> photos = new char[strlen(photos) + 1];
+    strcpy(this -> photos, photos);
 
 }
 Travel::Travel(const Travel &other){ this -> copy(other); }
@@ -65,20 +83,8 @@ Travel &Travel::operator =(const Travel &other){
 
 ostream &operator <<(ostream &os, const Travel &obj){
 
-    os << obj.destination << '\n' << obj.from << '\n' << obj.to << '\n' << (int)obj.grade << "\nComment\n" << obj.comment << "\nPhotos\n" << obj.photos;
+    os << obj.from << '\n' << obj.to << '\n' << obj.grade << "\nComment\n" << obj.comment << "\nPhotos\n" << obj.photos;
     return os;
-
-}
-
-istream &operator >>(istream &is, Travel &obj){
-
-    // Edit this to work with text formating
-    // P.S. It's very error prone
-    std::string temp;
-    is >> temp >> temp >> temp >> temp >> temp >> temp >> temp;
-    std::cout << temp << '\n';
-    is >> obj.destination >> obj.from >> obj.to >> obj.grade >> obj.comment;
-    return is;
 
 }
 
@@ -98,9 +104,9 @@ void Travel::write(ofstream &ofs) const{
     ofs.write((const char *)&commentSize, sizeof(size_t));
     ofs.write(this -> comment, commentSize);
 
-    // size_t photosSize = photos.size();
-    // ofs.write((const char *)&photosSize, sizeof(size_t));
-    ofs.write((const char*)&this -> photos, sizeof(Vector<char *>));
+    size_t stringSize = strlen(this -> photos);
+    ofs.write((const char *)&stringSize, sizeof(size_t));
+    ofs.write(this -> photos, stringSize);
 
 }
 
@@ -123,15 +129,12 @@ void Travel::read(ifstream &ifs){
     this -> comment = new char[commentSize + 1];
     ifs.read(this -> comment, commentSize);
     this -> comment[commentSize] = '\0';
-    
-    // size_t photosSize;
-    // ifs.read((char *)&photosSize, sizeof(size_t));
 
-    // this -> photos = new char[photosSize + 1];
-    // ifs.read(this -> photos, photosSize);
-    // this -> photos[photosSize] = '\0';
-
-    ifs.read((char *)&this -> photos, sizeof(Vector<char *>));
+    size_t stringSize;
+    ifs.read((char *)&stringSize, sizeof(size_t));
+    this -> photos = new char[stringSize + 1];
+    ifs.read(this -> photos, stringSize);
+    this -> photos[stringSize] = '\0';
 
 }
 
@@ -150,11 +153,16 @@ void Travel::setComment(const char *comment){
     strcpy(this -> comment, comment);
 
 }
-void Travel::setPhotos(const Vector<char *> &photos){ this -> photos = photos; }
+void Travel::setPhotos(const char *photos){
+
+    this -> photos = new char[strlen(photos) + 1];
+    strcpy(this -> photos, photos);
+
+}
 
 char *Travel::getDestination() const{ return this -> destination; }
 Date Travel::getFromDate() const{ return this -> from; }
 Date Travel::getToDate() const{ return this -> to; }
 unsigned char Travel::getGrade() const{ return this -> grade; }
 char *Travel::getComment() const{ return this -> comment; }
-Vector<char *> Travel::getPhotos() const{ return this -> photos; }
+char *Travel::getPhotos() const{ return this -> photos; }
