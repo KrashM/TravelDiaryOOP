@@ -1,4 +1,5 @@
 #include "StringChecker.hpp"
+#include "InvalidFormatException.hpp"
 
 const bool StringChecker::contains(const char *string, const char symbol){
 
@@ -9,7 +10,18 @@ const bool StringChecker::contains(const char *string, const char symbol){
 
 }
 
-const bool StringChecker::isPassword(const char *password){
+const void StringChecker::isUsername(const char *username){
+
+    const size_t usernameSize = strlen(username);
+    for(size_t i = 0; i < usernameSize; i++)
+        if(!(StringChecker::isLower(username[i])
+        || StringChecker::isUpper(username[i])
+        || StringChecker::isDigit(username[i])))
+            throw InvalidFormatException("Username contains unknown characters");
+
+}
+
+const void StringChecker::isPassword(const char *password){
 
     bool hasLowerCase = false, hasUpperCase = false, hasDigit = false, hasOtherChar = false;
     
@@ -25,19 +37,20 @@ const bool StringChecker::isPassword(const char *password){
 
     }
 
-    return hasLowerCase && hasUpperCase && hasDigit && hasOtherChar;
+    if(!hasLowerCase) throw InvalidFormatException("Password does not contain lower case characters");
+    if(!hasUpperCase) throw InvalidFormatException("Password does not contain upper case characters");
+    if(!hasDigit) throw InvalidFormatException("Password does not contain digits");
+    if(!hasOtherChar) throw InvalidFormatException("Password does not contain symbol characters");
 
 }
 
-const bool StringChecker::isEmail(const char *email){
+const void StringChecker::isEmail(const char *email){
 
     const size_t emailSize = strlen(email);
     size_t offset = emailSize - strlen(EMAILFORMAT);
 
     for(size_t i = emailSize - 1; i > emailSize - offset - 1; --i)
-        if(email[i] != EMAILFORMAT[i - offset]) return false;
-    
-    return true;
+        if(email[i] != EMAILFORMAT[i - offset]) throw InvalidFormatException("Email format is incorrect");
     
 }
 

@@ -35,10 +35,9 @@ class User{
         char *getEmail() const;
         Vector<Travel> &getTravels();
 
-        void validateUsername(const char *);
-        void validatePassword(const char *);
-        void validateEmail(const char *);
-        bool usernameExists(const char *);
+        static void validateUsername(const char *);
+        static void validatePassword(const char *);
+        static void validateEmail(const char *);
 
         const char *toString() const;
 

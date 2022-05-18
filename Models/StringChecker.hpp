@@ -22,8 +22,9 @@ class StringChecker{
         static const bool isOther(const char symbol){ return contains(OTHERCHARS, symbol); }
         static const bool isUnder(const char symbol){ return symbol == UNDESCORE; }
         static const bool isAny(const char symbol){ return isLower(symbol) || isUpper(symbol) || isDigit(symbol) || isOther(symbol); }
-        static const bool isPassword(const char *password);
-        static const bool isEmail(const char *email);
+        static const void isUsername(const char *username);
+        static const void isPassword(const char *password);
+        static const void isEmail(const char *email);
         static const bool isPng(const char *photo, const size_t photoSize);
         static const bool isJpeg(const char *photo, const size_t photoSize);
         static const bool isPhoto(const char *photo);

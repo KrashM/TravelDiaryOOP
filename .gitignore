@@ -1,1 +1,4 @@
 *.db
+*.docx
+.vscode
+main.exe

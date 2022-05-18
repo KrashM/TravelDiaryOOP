@@ -141,12 +141,8 @@ Vector<Travel> &User::getTravels(){ return this -> travels; }
 
 void User::validateUsername(const char *username){
 
-    const size_t usernameSize = strlen(username);
-    for(size_t i = 0; i < usernameSize; i++)
-        if(!(StringChecker::isLower(username[i])
-        || StringChecker::isUpper(username[i])
-        || StringChecker::isDigit(username[i])))
-            throw InvalidFormatException("Username contains unknown characters");
+    try{ StringChecker::isUsername(username); }
+    catch(const InvalidFormatException &e){ throw e; }
 
     char tempPath[strlen(username) + 13];
     strcpy(tempPath, "Database/");
@@ -160,8 +156,8 @@ void User::validateUsername(const char *username){
 
 }
 
-void User::validatePassword(const char *password){ if(!StringChecker::isPassword(password)) throw InvalidFormatException("Password does not meet requirements!"); }
-void User::validateEmail(const char *email){ if(!StringChecker::isEmail(email)) throw InvalidFormatException("Email is invalid"); }
+void User::validatePassword(const char *password){ try{ StringChecker::isPassword(password); } catch(const InvalidFormatException &e){ throw e; } }
+void User::validateEmail(const char *email){ try{ StringChecker::isEmail(email); } catch(const InvalidFormatException &e){ throw e; } }
 
 const char *User::toString() const{
 
